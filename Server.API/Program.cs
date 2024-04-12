@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Server.API.Services;
 using Server.Context.Context;
+using Server.Context.Repositories;
 using Server.Core.Email;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +18,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<UserRepository>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 var app = builder.Build();

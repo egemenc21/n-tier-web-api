@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Server.Context.Context;
+using Server.Context.Repositories;
 using Server.Core.Email;
 using Server.Model.Dtos;
 using Server.Model.Models;
@@ -12,15 +13,15 @@ namespace Server.API.Services;
 
 public class UserService
 {
-    private readonly ApplicationDbContext _context;
+    private readonly UserRepository _userRepository;
     private readonly IConfiguration _configuration;
     private readonly IEmailSender _emailSender;
 
-    public UserService(ApplicationDbContext context, IConfiguration configuration, IEmailSender emailSender)
+    public UserService(IConfiguration configuration, IEmailSender emailSender, UserRepository userRepository)
     {
-        _context = context;
         _configuration = configuration;
         _emailSender = emailSender;
+        _userRepository = userRepository;
     }
 
     public async Task<User> Register(UserRegisterDto request)
@@ -37,29 +38,22 @@ public class UserService
             ProfilePictureUrl = request.ProfilePictureUrl
         };
 
-        _context.Users.Add(user);
-
-        await _context.SaveChangesAsync();
-
+        await _userRepository.AddAsync(user);
+        
         var senderEmail = _configuration["SENDER_EMAIL"]!;
         var senderPassword = _configuration["SENDER_PASSWORD"]!;
-
-        Console.WriteLine(senderEmail + senderPassword);
-
-        Console.WriteLine("&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
-
-
+        
         await _emailSender.SendEmailAsync(senderEmail, senderPassword, request.Email, "dotnet",
-            "Welcome to out app!");
+            "Welcome to our app!");
 
         return user;
     }
 
     public async Task<string> Login(UserLoginDto request)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+        var user = await _userRepository.GetByEmailAsync(request.Email);
 
-        if (user is null || !BCrypt.Net.BCrypt.Verify(request.Password, user.HashedPassword))
+        if (!BCrypt.Net.BCrypt.Verify(request.Password, user.HashedPassword))
         {
             throw new UnauthorizedAccessException("Invalid email or password");
         }
@@ -71,14 +65,7 @@ public class UserService
 
     public async Task Delete(int id)
     {
-        var user = await _context.Users.FindAsync(id);
-        if (user == null)
-        {
-            throw new KeyNotFoundException("User not found");
-        }
-
-        _context.Users.Remove(user);
-        await _context.SaveChangesAsync();
+        await _userRepository.DeleteAsync(id);
     }
 
     private string GenerateToken(User user)
@@ -88,7 +75,7 @@ public class UserService
             throw new ArgumentNullException(nameof(user));
         }
 
-        List<Claim> claims = new List<Claim>()
+        var claims = new List<Claim>()
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.Name, user.Email)
