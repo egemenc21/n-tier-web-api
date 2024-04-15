@@ -29,7 +29,7 @@ namespace Server.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var meetings = _mapper.Map<List<MeetingDto>>(await _meetingService.GetAllMeetings());
+            var meetings = _mapper.Map<List<MeetingDto>>(await _meetingService.GetAll());
 
             return Ok(meetings);
         }
@@ -52,12 +52,12 @@ namespace Server.API.Controllers
         [ProducesResponseType(400)]
         public async Task<ActionResult<Meeting>> GetMeetingById(int id)
         {
-            if (!_meetingService.MeetingExists(id))
+            if (!_meetingService.Exists(id))
             {
                 return NotFound();
             }
             
-            var meeting = _mapper.Map<MeetingDto>(await _meetingService.GetMeetingById(id)) ;
+            var meeting = _mapper.Map<MeetingDto>(await _meetingService.GetById(id)) ;
 
             if (!ModelState.IsValid)
             {
@@ -89,7 +89,7 @@ namespace Server.API.Controllers
             var meetingMap = _mapper.Map<Meeting>(meetingCreate);
             meetingMap.UserId = userId;
 
-            if (!await _meetingService.CreateMeeting(meetingMap))
+            if (!await _meetingService.Create(meetingMap))
             {
                 ModelState.AddModelError("", "Something went wrong while saving");
                 return StatusCode(500, ModelState);
@@ -106,7 +106,7 @@ namespace Server.API.Controllers
                 return BadRequest();
             }
 
-            await _meetingService.UpdateMeeting(id, meeting);
+            await _meetingService.Update(id, meeting);
 
             return NoContent();
         }
@@ -114,7 +114,7 @@ namespace Server.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMeeting(int id)
         {
-            await _meetingService.DeleteMeeting(id);
+            await _meetingService.Delete(id);
             return NoContent();
         }
     

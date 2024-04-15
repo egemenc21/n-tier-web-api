@@ -28,7 +28,7 @@ namespace Server.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var users = _mapper.Map<List<UserDto>>(await (_userService).GetUsers());
+            var users = _mapper.Map<List<UserDto>>(await (_userService).GetAll());
 
             return Ok(users);
         }
@@ -38,12 +38,12 @@ namespace Server.API.Controllers
         [ProducesResponseType(400)]
         public async Task<ActionResult<Meeting>> GetUserById(int userId)
         {
-            if (!_userService.UserExists(userId))
+            if (!_userService.Exists(userId))
             {
                 return NotFound();
             }
             
-            var meeting = _mapper.Map<UserDto>(await _userService.GetUserById(userId)) ;
+            var meeting = _mapper.Map<UserDto>(await _userService.GetById(userId)) ;
 
             if (!ModelState.IsValid)
             {

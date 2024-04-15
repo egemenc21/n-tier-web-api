@@ -12,31 +12,38 @@ using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegiste
 
 namespace Server.Business.Services;
 
-public class UserService
+public class UserService : IBaseService<User>
 {
     private readonly IUserRepository _userRepository;
     private readonly IConfiguration _configuration;
     private readonly IEmailSender _emailSender;
-    private readonly IMapper _mapper;
-
     public UserService(IConfiguration configuration, IEmailSender emailSender, IUserRepository userRepository)
     {
         _configuration = configuration;
         _emailSender = emailSender;
         _userRepository = userRepository;
-      
     }
-    
 
-    public async Task<List<User>> GetUsers()
+    public async Task<List<User>> GetAll()
     {
         return await _userRepository.GetUsersAsync();
     }
     
-    public async Task<User> GetUserById(int id)
+    public async Task<User> GetById(int id)
     {
         return await _userRepository.GetUserByIdAsync(id);
     }
+
+    public Task<bool> Create(User entity)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<User> Update(int id, User entity)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<User> GetUserByEmail(string email)
     {
         return await _userRepository.GetUserByEmailAsync(email);
@@ -87,7 +94,7 @@ public class UserService
         await _userRepository.DeleteAsync(id);
     }
 
-    public bool UserExists(int id)
+    public bool Exists(int id)
     {
         return _userRepository.UserExists(id);
     }

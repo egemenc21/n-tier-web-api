@@ -5,7 +5,7 @@ namespace Server.Context.Abstract;
 public interface IMeetingRepository
 {
     Task<Meeting> GetByIdAsync(int id);
-    Task<List<Meeting?>> GetMeetings();
+    Task<List<Meeting>> GetMeetings();
 
     Task<List<Meeting?>> GetMeetingsByUserId(int userId);
     

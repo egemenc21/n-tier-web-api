@@ -13,7 +13,7 @@ public class MeetingService : IBaseService<Meeting>
         _meetingRepository = meetingRepository;
     }
 
-    public async Task<List<Meeting?>> GetAll()
+    public async Task<List<Meeting>> GetAll()
     {
         return await _meetingRepository.GetMeetings();
     }
