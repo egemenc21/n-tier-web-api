@@ -19,6 +19,14 @@ public class MeetingRepository : IMeetingRepository
         return await _context.Meetings.ToListAsync();
     }
 
+    public async Task<List<Meeting?>> GetMeetingsByUserId(int userId)
+    {
+        var meetings = await _context.Meetings
+            .Where(m => m.UserId == userId)
+            .ToListAsync();
+        return meetings;
+    }
+
     public async Task<Meeting?> GetMeetingByNameAsync(string name)
     {
         return await _context.Meetings.Where(m => m.Name.Trim().ToUpper() == name.TrimEnd().ToUpper())
@@ -31,9 +39,24 @@ public class MeetingRepository : IMeetingRepository
                throw new InvalidOperationException();
     }
 
-    public async Task<bool> CreateMeetingAsync(Meeting? meeting)
+    public async Task<bool> CreateMeetingAsync(Meeting meeting)
     {
+        // var user = await _context.Users.Where(u => u.Id == meeting.UserId).FirstOrDefaultAsync();
+
+        // var newMeeting = new Meeting()
+        // {
+        //     Id = meeting.Id,
+        //     Name = meeting.Name,
+        //     StartDate = meeting.StartDate,
+        //     EndDate = meeting.EndDate,
+        //     Description = meeting.Description,
+        //     DocumentUrl = meeting.DocumentUrl,
+        //     UserId = meeting.UserId,
+        //     User = user
+        // };
+        //
         _context.Meetings.Add(meeting);
+
         return await Save();
     }
 

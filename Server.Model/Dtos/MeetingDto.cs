@@ -8,5 +8,6 @@ namespace Server.Model.Dtos
         public DateTime? EndDate { get; set; }
         public string Description { get; set; }
         public string DocumentUrl { get; set; }
+        
     }
 }

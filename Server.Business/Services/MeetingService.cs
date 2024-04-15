@@ -18,6 +18,11 @@ public class MeetingService
         return await _meetingRepository.GetMeetings();
     }
 
+    public async Task<List<Meeting?>> GetMeetingsByUserId(int userId)
+    {
+        return await _meetingRepository.GetMeetingsByUserId(userId);
+    }
+
     public async Task<Meeting> GetMeetingById(int id)
     {
         return await _meetingRepository.GetByIdAsync(id);
@@ -36,6 +41,7 @@ public class MeetingService
     public async Task<Meeting> UpdateMeeting(int id, Meeting meeting)
     {
         var existingMeeting = await _meetingRepository.GetByIdAsync(id);
+        
         if (existingMeeting == null)
         {
             throw new KeyNotFoundException("Meeting not found");

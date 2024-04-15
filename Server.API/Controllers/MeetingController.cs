@@ -12,13 +12,11 @@ namespace Server.API.Controllers
     {
         private readonly MeetingService _meetingService;
         private readonly IMapper _mapper;
-        private readonly UserService _userService;
 
-        public MeetingController(MeetingService meetingService, UserService userService, IMapper mapper)
+        public MeetingController(MeetingService meetingService, IMapper mapper)
         {
             _meetingService = meetingService;
             _mapper = mapper;
-            _userService = userService;
         }
         
         [HttpGet]
@@ -36,6 +34,18 @@ namespace Server.API.Controllers
             return Ok(meetings);
         }
         
+        [HttpGet("User/{userId}")]
+        public async Task<ActionResult> GetMeetingsByUserId(int userId)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var meetings = _mapper.Map<List<MeetingDto>>(await _meetingService.GetMeetingsByUserId(userId));
+
+            return Ok(meetings);
+        }
         
         [HttpGet("{id}")]
         [ProducesResponseType(200, Type = typeof(Meeting))]
@@ -57,7 +67,9 @@ namespace Server.API.Controllers
             return Ok(meeting);
         }
 
-        [HttpPost()]
+        
+
+        [HttpPost]
         public async Task<IActionResult> CreateMeeting([FromQuery] int userId, [FromBody] MeetingDto? meetingCreate)
         {
             if (meetingCreate == null)
@@ -75,7 +87,7 @@ namespace Server.API.Controllers
                 return BadRequest(ModelState);
             
             var meetingMap = _mapper.Map<Meeting>(meetingCreate);
-            meetingMap.User = await _userService.GetUserById(userId);
+            meetingMap.UserId = userId;
 
             if (!await _meetingService.CreateMeeting(meetingMap))
             {
