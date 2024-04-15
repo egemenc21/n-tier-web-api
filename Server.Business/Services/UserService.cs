@@ -47,9 +47,13 @@ public class UserService : IBaseService<User>
         return true;
     }
 
-    public Task<User> Update(int id, User entity)
+    public async Task<bool> Update(int id, User user)
     {
-        throw new NotImplementedException();
+        if (id != user.Id)
+        {
+            return false;
+        }
+        return await _userRepository.UpdateAsync(user);
     }
 
     public async Task<User> GetUserByEmail(string email)

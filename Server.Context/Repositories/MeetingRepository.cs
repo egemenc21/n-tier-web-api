@@ -41,30 +41,14 @@ public class MeetingRepository : IMeetingRepository
 
     public async Task<bool> CreateMeetingAsync(Meeting meeting)
     {
-        // var user = await _context.Users.Where(u => u.Id == meeting.UserId).FirstOrDefaultAsync();
-
-        // var newMeeting = new Meeting()
-        // {
-        //     Id = meeting.Id,
-        //     Name = meeting.Name,
-        //     StartDate = meeting.StartDate,
-        //     EndDate = meeting.EndDate,
-        //     Description = meeting.Description,
-        //     DocumentUrl = meeting.DocumentUrl,
-        //     UserId = meeting.UserId,
-        //     User = user
-        // };
-        //
         _context.Meetings.Add(meeting);
-
         return await Save();
     }
 
-    public async Task<Meeting> UpdateAsync(Meeting meeting)
+    public async Task<bool> UpdateAsync(Meeting meeting)
     {
-        _context.Entry(meeting).State = EntityState.Modified;
-        await _context.SaveChangesAsync();
-        return meeting;
+        _context.Update(meeting);
+        return await Save();
     }
 
     public async Task DeleteAsync(int id)
@@ -88,6 +72,6 @@ public class MeetingRepository : IMeetingRepository
     {
         var saved = await _context.SaveChangesAsync();
 
-        return saved > 0 ? true : false;
+        return saved > 0;
     }
 }

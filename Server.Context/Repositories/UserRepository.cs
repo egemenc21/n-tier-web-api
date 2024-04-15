@@ -38,11 +38,10 @@ public class UserRepository : IUserRepository
         return user;
     }
 
-    public async Task<User> UpdateAsync(User user)
+    public async Task<bool> UpdateAsync(User user)
     {
-        _context.Entry(user).State = EntityState.Modified;
-        await _context.SaveChangesAsync();
-        return user;
+        _context.Update(user);
+        return await Save();
     }
 
     public async Task DeleteAsync(int id)
@@ -61,5 +60,12 @@ public class UserRepository : IUserRepository
     public bool UserExists(int userId)
     {
         return _context.Users.Any(u => u.Id == userId);
+    }
+    
+    public async Task<bool> Save()
+    {
+        var saved = await _context.SaveChangesAsync();
+
+        return saved > 0;
     }
 }

@@ -59,16 +59,29 @@ public class BaseController<TService, TEntity, TDto> : ControllerBase
     //Update
     
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, TEntity entity)
+    public async Task<IActionResult> Update(int id, [FromBody] TDto entityToBeUpdated)
     {
         if (!_service.Exists(id))
         {
             return NotFound();
         }
 
-        var data = await _service.Update(id, entity);
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
 
-        return Ok(data);
+        var entityMap = _mapper.Map<TEntity>(entityToBeUpdated);
+
+        if (!await _service.Update(id, entityMap))
+        {
+            ModelState.AddModelError("", "Something went wrong updating category (id's are not matching)");
+            return StatusCode(500, ModelState);
+        }
+
+        await _service.Update(id, entityMap);
+
+        return NoContent();
     }
     
     //Delete

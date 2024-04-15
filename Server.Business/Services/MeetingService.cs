@@ -38,7 +38,7 @@ public class MeetingService : IBaseService<Meeting>
         return await _meetingRepository.CreateMeetingAsync(meeting);
     }
 
-    public async Task<Meeting> Update(int id, Meeting meeting)
+    public async Task<bool> Update(int id, Meeting meeting)
     {
         var existingMeeting = await _meetingRepository.GetByIdAsync(id);
         
@@ -46,16 +46,13 @@ public class MeetingService : IBaseService<Meeting>
         {
             throw new KeyNotFoundException("Meeting not found");
         }
+        
+        if (id != meeting.Id)
+        {
+            return false;
+        }
 
-        // Update existingMeeting properties with meeting properties
-        existingMeeting.Name = meeting.Name;
-        existingMeeting.StartDate = meeting.StartDate;
-        existingMeeting.EndDate = meeting.EndDate;
-        existingMeeting.Description = meeting.Description;
-        existingMeeting.DocumentUrl = meeting.DocumentUrl;
-        existingMeeting.UserId = meeting.UserId;
-
-        return await _meetingRepository.UpdateAsync(existingMeeting);
+        return await _meetingRepository.UpdateAsync(meeting);;
     }
 
     public async Task Delete(int id)

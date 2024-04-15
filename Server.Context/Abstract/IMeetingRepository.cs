@@ -11,7 +11,7 @@ public interface IMeetingRepository
     
     Task<Meeting?> GetMeetingByNameAsync(string name);
     Task<bool> CreateMeetingAsync(Meeting meeting);
-    Task<Meeting> UpdateAsync(Meeting meeting);
+    Task<bool> UpdateAsync(Meeting meeting);
     Task DeleteAsync(int id);
 
     bool MeetingExists(int id);
