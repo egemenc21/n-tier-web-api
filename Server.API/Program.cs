@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using Server.API.Services;
+using Server.Business.Services;
+using Server.Context.Abstract;
 using Server.Context.Context;
 using Server.Context.Repositories;
 using Server.Core.Email;
@@ -17,10 +18,16 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddScoped<UserService>();
-builder.Services.AddScoped<UserRepository>();
-builder.Services.AddTransient<IEmailSender, EmailSender>();
+//Automapper
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+// Register repositories and services
+builder.Services.AddScoped<IUserRepository,UserRepository>();
+builder.Services.AddScoped<IMeetingRepository, MeetingRepository>();
+builder.Services.AddTransient<IEmailSender, EmailSender>();
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<MeetingService>();
+ 
 var app = builder.Build();
 
 

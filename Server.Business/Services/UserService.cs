@@ -1,28 +1,47 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.EntityFrameworkCore;
+using AutoMapper;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using Server.Context.Context;
-using Server.Context.Repositories;
+using Server.Context.Abstract;
 using Server.Core.Email;
 using Server.Model.Dtos;
 using Server.Model.Models;
+using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
-namespace Server.API.Services;
+namespace Server.Business.Services;
 
 public class UserService
 {
-    private readonly UserRepository _userRepository;
+    private readonly IUserRepository _userRepository;
     private readonly IConfiguration _configuration;
     private readonly IEmailSender _emailSender;
+    private readonly IMapper _mapper;
 
-    public UserService(IConfiguration configuration, IEmailSender emailSender, UserRepository userRepository)
+    public UserService(IConfiguration configuration, IEmailSender emailSender, IUserRepository userRepository)
     {
         _configuration = configuration;
         _emailSender = emailSender;
         _userRepository = userRepository;
+      
     }
+    
+
+    public async Task<List<User>> GetUsers()
+    {
+        return await _userRepository.GetUsersAsync();
+    }
+    
+    public async Task<User> GetUserById(int id)
+    {
+        return await _userRepository.GetUserByIdAsync(id);
+    }
+    public async Task<User> GetUserByEmail(string email)
+    {
+        return await _userRepository.GetUserByEmailAsync(email);
+    }
+
 
     public async Task<User> Register(UserRegisterDto request)
     {
@@ -39,10 +58,10 @@ public class UserService
         };
 
         await _userRepository.AddAsync(user);
-        
+
         var senderEmail = _configuration["SENDER_EMAIL"]!;
         var senderPassword = _configuration["SENDER_PASSWORD"]!;
-        
+
         await _emailSender.SendEmailAsync(senderEmail, senderPassword, request.Email, "dotnet",
             "Welcome to our app!");
 
@@ -51,7 +70,7 @@ public class UserService
 
     public async Task<string> Login(UserLoginDto request)
     {
-        var user = await _userRepository.GetByEmailAsync(request.Email);
+        var user = await _userRepository.GetUserByEmailAsync(request.Email);
 
         if (!BCrypt.Net.BCrypt.Verify(request.Password, user.HashedPassword))
         {
@@ -66,6 +85,11 @@ public class UserService
     public async Task Delete(int id)
     {
         await _userRepository.DeleteAsync(id);
+    }
+
+    public bool UserExists(int id)
+    {
+        return _userRepository.UserExists(id);
     }
 
     private string GenerateToken(User user)

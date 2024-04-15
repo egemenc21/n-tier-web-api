@@ -1,10 +1,11 @@
 using Microsoft.EntityFrameworkCore;
+using Server.Context.Abstract;
 using Server.Context.Context;
 using Server.Model.Models;
 
 namespace Server.Context.Repositories;
 
-public class UserRepository
+public class UserRepository : IUserRepository
 {
     private readonly ApplicationDbContext _context;
 
@@ -13,19 +14,19 @@ public class UserRepository
         _context = context;
     }
 
-    public async Task<User?> GetByIdAsync(int id)
+    public async Task<User?> GetUserByIdAsync(int id)
     {
-        return await _context.Users.FindAsync(id);
+        return await _context.Users.Where(u => u.Id == id).FirstOrDefaultAsync();
     }
     
-    public async Task<User> GetByEmailAsync(string email)
+    public async Task<User> GetUserByEmailAsync(string email)
     {
         if (email == null) throw new ArgumentNullException(nameof(email));
-        
+
         return await _context.Users.FirstOrDefaultAsync(u => u.Email == email) ?? throw new InvalidOperationException();
     }
 
-    public async Task<List<User>> GetAllAsync()
+    public async Task<List<User>> GetUsersAsync()
     {
         return await _context.Users.ToListAsync();
     }
@@ -52,5 +53,10 @@ public class UserRepository
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
         }
+    }
+
+    public bool UserExists(int userId)
+    {
+        return _context.Users.Any(u => u.Id == userId);
     }
 }

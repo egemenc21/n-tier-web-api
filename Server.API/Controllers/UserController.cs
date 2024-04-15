@@ -1,11 +1,6 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Server.API.Services;
-using Server.Context.Context;
+using Server.Business.Services;
 using Server.Model.Dtos;
 using Server.Model.Models;
 
@@ -16,11 +11,47 @@ namespace Server.API.Controllers
     public class UserController : ControllerBase
     {
         private readonly UserService _userService;
+        private readonly IMapper _mapper;
 
-        public UserController(UserService userService)
+        public UserController(UserService userService, IMapper mapper)
         {
             _userService = userService;
+            _mapper = mapper;
         }
+
+        [HttpGet]
+        [ProducesResponseType(200, Type = typeof(List<User>))]
+        public async Task<IActionResult> GetUsers()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var users = _mapper.Map<List<UserDto>>(await (_userService).GetUsers());
+
+            return Ok(users);
+        }
+        
+        [HttpGet("{userId}")]
+        [ProducesResponseType(200, Type = typeof(User))]
+        [ProducesResponseType(400)]
+        public async Task<ActionResult<Meeting>> GetUserById(int userId)
+        {
+            if (!_userService.UserExists(userId))
+            {
+                return NotFound();
+            }
+            
+            var meeting = _mapper.Map<UserDto>(await _userService.GetUserById(userId)) ;
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
+            return Ok(meeting);
+        } 
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserRegisterDto request)
