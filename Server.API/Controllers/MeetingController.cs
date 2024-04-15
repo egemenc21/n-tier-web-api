@@ -8,30 +8,10 @@ namespace Server.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MeetingController : ControllerBase
+    public class MeetingController : BaseController<MeetingService, Meeting, MeetingDto>
     {
-        private readonly MeetingService _meetingService;
-        private readonly IMapper _mapper;
-
-        public MeetingController(MeetingService meetingService, IMapper mapper)
+        public MeetingController(MeetingService service, IMapper mapper) : base(service, mapper)
         {
-            _meetingService = meetingService;
-            _mapper = mapper;
-        }
-        
-        [HttpGet]
-        [ProducesResponseType(200, Type = typeof(List<Meeting>))]
-        public async Task<ActionResult> GetAllMeetings()
-        {
-            
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var meetings = _mapper.Map<List<MeetingDto>>(await _meetingService.GetAll());
-
-            return Ok(meetings);
         }
         
         [HttpGet("User/{userId}")]
@@ -42,40 +22,18 @@ namespace Server.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var meetings = _mapper.Map<List<MeetingDto>>(await _meetingService.GetMeetingsByUserId(userId));
+            var meetings = _mapper.Map<List<MeetingDto>>(await _service.GetMeetingsByUserId(userId));
 
             return Ok(meetings);
         }
         
-        [HttpGet("{id}")]
-        [ProducesResponseType(200, Type = typeof(Meeting))]
-        [ProducesResponseType(400)]
-        public async Task<ActionResult<Meeting>> GetMeetingById(int id)
-        {
-            if (!_meetingService.Exists(id))
-            {
-                return NotFound();
-            }
-            
-            var meeting = _mapper.Map<MeetingDto>(await _meetingService.GetById(id)) ;
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            
-            return Ok(meeting);
-        }
-
-        
-
         [HttpPost]
         public async Task<IActionResult> CreateMeeting([FromQuery] int userId, [FromBody] MeetingDto? meetingCreate)
         {
             if (meetingCreate == null)
                 return BadRequest(ModelState);
 
-            var meeting = await _meetingService.GetMeetingByName(meetingCreate.Name);
+            var meeting = await _service.GetMeetingByName(meetingCreate.Name);
 
             if (meeting != null)
             {
@@ -89,7 +47,7 @@ namespace Server.API.Controllers
             var meetingMap = _mapper.Map<Meeting>(meetingCreate);
             meetingMap.UserId = userId;
 
-            if (!await _meetingService.Create(meetingMap))
+            if (!await _service.Create(meetingMap))
             {
                 ModelState.AddModelError("", "Something went wrong while saving");
                 return StatusCode(500, ModelState);
@@ -97,26 +55,5 @@ namespace Server.API.Controllers
             
             return Ok("Successfully created");
         }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateMeeting(int id, Meeting meeting)
-        {
-            if (id != meeting.Id)
-            {
-                return BadRequest();
-            }
-
-            await _meetingService.Update(id, meeting);
-
-            return NoContent();
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteMeeting(int id)
-        {
-            await _meetingService.Delete(id);
-            return NoContent();
-        }
-    
     }
 }

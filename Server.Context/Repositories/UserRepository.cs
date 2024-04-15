@@ -48,8 +48,11 @@ public class UserRepository : IUserRepository
     public async Task DeleteAsync(int id)
     {
         var user = await _context.Users.FindAsync(id);
+        
         if (user != null)
         {
+            var meetingsToDelete = _context.Meetings.Where(m => m.UserId == id);
+            _context.Meetings.RemoveRange(meetingsToDelete);
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
         }

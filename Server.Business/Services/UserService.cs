@@ -17,6 +17,7 @@ public class UserService : IBaseService<User>
     private readonly IUserRepository _userRepository;
     private readonly IConfiguration _configuration;
     private readonly IEmailSender _emailSender;
+
     public UserService(IConfiguration configuration, IEmailSender emailSender, IUserRepository userRepository)
     {
         _configuration = configuration;
@@ -28,15 +29,22 @@ public class UserService : IBaseService<User>
     {
         return await _userRepository.GetUsersAsync();
     }
-    
+
     public async Task<User> GetById(int id)
     {
         return await _userRepository.GetUserByIdAsync(id);
     }
 
-    public Task<bool> Create(User entity)
+    public async Task<bool> Create(User entity)
     {
-        throw new NotImplementedException();
+        if (_userRepository.UserExists(entity.Id))
+        {
+            return false;
+        }
+
+        await _userRepository.AddAsync(entity);
+        
+        return true;
     }
 
     public Task<User> Update(int id, User entity)
@@ -64,7 +72,7 @@ public class UserService : IBaseService<User>
             ProfilePictureUrl = request.ProfilePictureUrl
         };
 
-        await _userRepository.AddAsync(user);
+        await Create(user);
 
         var senderEmail = _configuration["SENDER_EMAIL"]!;
         var senderPassword = _configuration["SENDER_PASSWORD"]!;
