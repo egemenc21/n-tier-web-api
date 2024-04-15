@@ -4,7 +4,7 @@ using Server.Model.Models;
 
 namespace Server.Business.Services;
 
-public class MeetingService
+public class MeetingService : IBaseService<Meeting>
 {
     private readonly IMeetingRepository _meetingRepository;
 
@@ -13,7 +13,7 @@ public class MeetingService
         _meetingRepository = meetingRepository;
     }
 
-    public async Task<List<Meeting?>> GetAllMeetings()
+    public async Task<List<Meeting?>> GetAll()
     {
         return await _meetingRepository.GetMeetings();
     }
@@ -23,7 +23,7 @@ public class MeetingService
         return await _meetingRepository.GetMeetingsByUserId(userId);
     }
 
-    public async Task<Meeting> GetMeetingById(int id)
+    public async Task<Meeting> GetById(int id)
     {
         return await _meetingRepository.GetByIdAsync(id);
     }
@@ -33,12 +33,12 @@ public class MeetingService
         return await _meetingRepository.GetMeetingByNameAsync(name);
     }
 
-    public async Task<bool> CreateMeeting(Meeting meeting)
+    public async Task<bool> Create(Meeting meeting)
     {
         return await _meetingRepository.CreateMeetingAsync(meeting);
     }
 
-    public async Task<Meeting> UpdateMeeting(int id, Meeting meeting)
+    public async Task<Meeting> Update(int id, Meeting meeting)
     {
         var existingMeeting = await _meetingRepository.GetByIdAsync(id);
         
@@ -58,12 +58,12 @@ public class MeetingService
         return await _meetingRepository.UpdateAsync(existingMeeting);
     }
 
-    public async Task DeleteMeeting(int id)
+    public async Task Delete(int id)
     {
         await _meetingRepository.DeleteAsync(id);
     }
 
-    public bool MeetingExists(int id)
+    public bool Exists(int id)
     {
         return _meetingRepository.MeetingExists(id);
     }
