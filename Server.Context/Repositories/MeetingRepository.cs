@@ -74,4 +74,9 @@ public class MeetingRepository : IMeetingRepository
 
         return saved > 0;
     }
+    public void Detach(Meeting meeting)
+    { 
+        _context.Entry(meeting).State = EntityState.Detached;
+    }
+
 }

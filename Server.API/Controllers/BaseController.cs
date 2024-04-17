@@ -73,16 +73,24 @@ public class BaseController<TService, TEntity, TDto> : ControllerBase
 
         var entityMap = _mapper.Map<TEntity>(entityToBeUpdated);
 
-        if (!await _service.Update(id, entityMap))
+        try
         {
-            ModelState.AddModelError("", "Something went wrong updating category (id's are not matching)");
+            if (!await _service.Update(id, entityMap))
+            {
+                ModelState.AddModelError("", "Something went wrong updating category (id's are not matching)");
+                return StatusCode(500, ModelState);
+            }
+        }
+        catch (InvalidOperationException ex)
+        {
+            ModelState.AddModelError("", ex.Message);
             return StatusCode(500, ModelState);
         }
 
-        await _service.Update(id, entityMap);
-
         return NoContent();
     }
+
+
     
     //Delete
     

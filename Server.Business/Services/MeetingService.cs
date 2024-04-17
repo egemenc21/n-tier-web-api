@@ -52,6 +52,8 @@ public class MeetingService : IBaseService<Meeting>
             return false;
         }
 
+        _meetingRepository.Detach(existingMeeting);
+
         return await _meetingRepository.UpdateAsync(meeting);;
     }
 

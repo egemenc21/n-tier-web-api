@@ -17,4 +17,6 @@ public interface IMeetingRepository
     bool MeetingExists(int id);
 
     Task<bool> Save();
+
+    void Detach(Meeting meeting);
 }
