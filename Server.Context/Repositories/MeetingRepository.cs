@@ -54,6 +54,7 @@ public class MeetingRepository : IMeetingRepository
     public async Task DeleteAsync(int id)
     {
         var meeting = await _context.Meetings.FindAsync(id);
+        
         if (meeting == null)
         {
             throw new KeyNotFoundException("Meeting not found");

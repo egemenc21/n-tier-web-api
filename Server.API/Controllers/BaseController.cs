@@ -19,13 +19,12 @@ public class BaseController<TService, TEntity, TDto> : ControllerBase
         _service = service;
         _mapper = mapper;
     }
-    
+
     //Read all
-    
+
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-            
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
@@ -35,9 +34,9 @@ public class BaseController<TService, TEntity, TDto> : ControllerBase
 
         return Ok(data);
     }
-    
+
     //Read by id
-    
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -45,19 +44,19 @@ public class BaseController<TService, TEntity, TDto> : ControllerBase
         {
             return NotFound();
         }
-            
-        var data = _mapper.Map<TDto>(await _service.GetById(id)) ;
+
+        var data = _mapper.Map<TDto>(await _service.GetById(id));
 
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
-            
+
         return Ok(data);
     }
-    
+
     //Update
-    
+
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] TDto entityToBeUpdated)
     {
@@ -91,20 +90,27 @@ public class BaseController<TService, TEntity, TDto> : ControllerBase
     }
 
 
-    
     //Delete
-    
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
         if (!_service.Exists(id))
-        {
             return NotFound();
+
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        try
+        {
+            await _service.Delete(id);
         }
-        
-        await _service.Delete(id);
-        
-        return Ok("Entity has been deleted successfully!");
+        catch (KeyNotFoundException e)
+        {
+            ModelState.AddModelError("", e.Message);
+        }
+
+
+        return NoContent();
     }
-    
 }

@@ -125,12 +125,15 @@ public class UserService : IBaseService<User>
             new Claim(JwtRegisteredClaimNames.Name, user.Email)
         };
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSecret"]!));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:SigningKey"]!));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
         var token = new JwtSecurityToken(
             claims: claims,
             expires: DateTime.Now.AddHours(1),
-            signingCredentials: creds);
+            signingCredentials: creds,
+            issuer: _configuration["JWT:Issuer"],
+            audience:_configuration["JWT:Audience"]
+            );
         var jwt = new JwtSecurityTokenHandler().WriteToken(token);
 
         return jwt;
