@@ -1,14 +1,16 @@
+using Server.Model.Dtos;
+using Server.Model.Dtos.User;
 using Server.Model.Models;
 
 namespace Server.Context.Abstract;
 
 public interface IUserRepository
 {
-    Task<User> GetUserByIdAsync(int id);
-    Task<User> GetUserByEmailAsync(string email);
-    Task<List<User>> GetUsersAsync();
-    Task<User> AddAsync(User user);
-    Task<bool> UpdateAsync(User user);
+    Task<AppUser?> GetUserByIdAsync(string id);
+    Task<AppUser> GetUserByEmailAsync(string email);
+    Task<List<AppUser>> GetUsersAsync();
+    Task<CreateUserResponse> AddAsync(UserRegisterDto model);
+    Task<bool> UpdateAsync(AppUser user);
     Task DeleteAsync(int id);
 
     bool UserExists(int userId);

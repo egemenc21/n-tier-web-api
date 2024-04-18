@@ -92,10 +92,10 @@ builder.Services.AddAuthentication(options =>
 });
 
 // Register repositories and services
-// builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IMeetingRepository, MeetingRepository>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
-// builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<MeetingService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
