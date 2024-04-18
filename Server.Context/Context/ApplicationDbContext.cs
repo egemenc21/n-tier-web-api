@@ -11,7 +11,6 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
     {
     }
     
-    public DbSet<User> Users { get; set; }
     public DbSet<Meeting?> Meetings { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
