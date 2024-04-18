@@ -11,9 +11,9 @@ public class Meeting : BaseModel
     public string DocumentUrl { get; set; } = string.Empty;
     
     
-    public int? UserId { get; set; } 
+    public string? UserId { get; set; } 
     
     //relational properties
     [ForeignKey("UserId")]
-    public virtual User? User { get; set; }
+    public virtual AppUser? User { get; set; }
 }

@@ -50,8 +50,8 @@ public class UserRepository : IUserRepository
         
         if (user != null)
         {
-            var meetingsToDelete = _context.Meetings.Where(m => m.UserId == id);
-            _context.Meetings.RemoveRange(meetingsToDelete);
+            // var meetingsToDelete = _context.Meetings.Where(m => m.UserId == id);
+            // _context.Meetings.RemoveRange(meetingsToDelete);
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
         }

@@ -22,7 +22,7 @@ public class MeetingRepository : IMeetingRepository
     public async Task<List<Meeting?>> GetMeetingsByUserId(int userId)
     {
         var meetings = await _context.Meetings
-            .Where(m => m.UserId == userId)
+            .Where(m => m.UserId == userId.ToString())
             .ToListAsync();
         return meetings;
     }

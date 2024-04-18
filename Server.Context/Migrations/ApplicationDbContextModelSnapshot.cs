@@ -274,7 +274,7 @@ namespace Server.Context.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Meetings");
+                    b.ToTable("Meetings", (string)null);
                 });
 
             modelBuilder.Entity("Server.Model.Models.User", b =>
@@ -320,7 +320,7 @@ namespace Server.Context.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

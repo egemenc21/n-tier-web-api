@@ -45,7 +45,7 @@ namespace Server.API.Controllers
                 return BadRequest(ModelState);
             
             var meetingMap = _mapper.Map<Meeting>(meetingCreate);
-            meetingMap.UserId = userId;
+            meetingMap.UserId = userId.ToString();
 
             if (!await _service.Create(meetingMap))
             {

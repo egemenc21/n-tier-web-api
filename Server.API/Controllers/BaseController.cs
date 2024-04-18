@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Server.Business.Services;
 using Server.Model.Dtos;
@@ -23,6 +24,7 @@ public class BaseController<TService, TEntity, TDto> : ControllerBase
     //Read all
 
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> GetAll()
     {
         if (!ModelState.IsValid)
