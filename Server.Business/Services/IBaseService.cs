@@ -1,10 +1,10 @@
 namespace Server.Business.Services;
 
-public interface IBaseService<TEntity>
+public interface IBaseService<TEntity, TDto>
 {
     Task<List<TEntity>> GetAll();
     Task<TEntity?> GetById(string id);
-    Task<bool>  Update(string id, TEntity entity);
+    Task<bool>  Update(string id, TDto dto);
     Task Delete(string id);
     Task<bool>  Exists(string id);
 }

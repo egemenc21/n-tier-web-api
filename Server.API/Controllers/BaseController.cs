@@ -6,7 +6,7 @@ using Server.Business.Services;
 namespace Server.API.Controllers;
 
 public class BaseController<TService, TEntity, TDto> : ControllerBase
-    where TService : IBaseService<TEntity>
+    where TService : IBaseService<TEntity, TDto>
     where TEntity : class
     where TDto : class
 {
@@ -72,13 +72,9 @@ public class BaseController<TService, TEntity, TDto> : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var entityMap = _mapper.Map<TEntity>(entityToBeUpdated);
-
-        Console.WriteLine(entityMap + "_________________________________________");
-
         try
         {
-            if (!await _service.Update(id, entityMap))
+            if (!await _service.Update(id, entityToBeUpdated))
             {
                 ModelState.AddModelError("", "Something went wrong updating category (id's are not matching)");
                 return StatusCode(500, ModelState);

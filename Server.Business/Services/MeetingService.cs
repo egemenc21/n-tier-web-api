@@ -4,7 +4,7 @@ using Server.Model.Models;
 
 namespace Server.Business.Services;
 
-public class MeetingService : IBaseService<Meeting>
+public class MeetingService : IBaseService<Meeting, MeetingDto>
 {
     private readonly IMeetingRepository _meetingRepository;
 
@@ -28,6 +28,7 @@ public class MeetingService : IBaseService<Meeting>
         return await _meetingRepository.GetByIdAsync(int.Parse(id));
     }
     
+
     public async Task<Meeting?> GetMeetingByName(string name)
     {
         return await _meetingRepository.GetMeetingByNameAsync(name);
@@ -38,7 +39,7 @@ public class MeetingService : IBaseService<Meeting>
         return await _meetingRepository.CreateMeetingAsync(meeting);
     }
 
-    public async Task<bool> Update(string id, Meeting meeting)
+    public async Task<bool> Update(string id, MeetingDto meetingDto)
     {
         var existingMeeting = await _meetingRepository.GetByIdAsync(int.Parse(id));
         
@@ -47,14 +48,19 @@ public class MeetingService : IBaseService<Meeting>
             throw new KeyNotFoundException("Meeting not found");
         }
         
-        if (int.Parse(id) != meeting.Id)
+        if (int.Parse(id) != meetingDto.Id)
         {
             return false;
         }
 
-        _meetingRepository.Detach(existingMeeting);
+        existingMeeting.Id = meetingDto.Id;
+        existingMeeting.Name = meetingDto.Name;
+        existingMeeting.StartDate = meetingDto.StartDate;
+        existingMeeting.EndDate = meetingDto.EndDate;
+        existingMeeting.Description = meetingDto.Description;
+        existingMeeting.DocumentUrl = meetingDto.DocumentUrl;
 
-        return await _meetingRepository.UpdateAsync(meeting);;
+        return await _meetingRepository.UpdateAsync(existingMeeting);;
     }
 
     public async Task Delete(string id)

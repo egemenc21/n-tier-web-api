@@ -9,7 +9,7 @@ using Server.Model.Models;
 
 namespace Server.Business.Services;
 
-public class UserService : IBaseService<AppUser>
+public class UserService : IBaseService<AppUser, UserDto>
 {
     private readonly IUserRepository _userRepository;
     private readonly IConfiguration _configuration;
@@ -38,6 +38,8 @@ public class UserService : IBaseService<AppUser>
         return await _userRepository.GetUserByIdAsync(id);
     }
 
+
+
     // public async Task<bool> Create(AppUser entity)
     // {
     //     if (_userRepository.UserExists(entity.Id))
@@ -50,14 +52,27 @@ public class UserService : IBaseService<AppUser>
     //     return true;
     // }
 
-    public async Task<bool> Update(string id, AppUser user)
+    public async Task<bool> Update(string id, UserDto user)
     {
         if (id != user.Id)
         {
             return false;
         }
         
-        var data = await _userRepository.UpdateAsync(user);
+        var existingUser = await _userRepository.GetUserByIdAsync(id);
+     
+
+        existingUser!.Id = user.Id;
+        existingUser!.UserName = user.UserName;
+        existingUser!.Name = user.Name;
+        existingUser!.Surname = user.Surname;
+        existingUser!.Email = user.PasswordHash;
+        existingUser!.PhoneNumber = user.PhoneNumber;
+        existingUser!.ProfilePictureUrl = user.ProfilePictureUrl;
+        
+        
+        
+        var data = await _userRepository.UpdateAsync(existingUser);
 
         return data;
     }
