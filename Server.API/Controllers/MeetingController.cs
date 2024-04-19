@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Server.Business.Services;
 using Server.Model.Dtos;
@@ -15,7 +16,8 @@ namespace Server.API.Controllers
         }
         
         [HttpGet("User/{userId}")]
-        public async Task<ActionResult> GetMeetingsByUserId(int userId)
+        [Authorize]
+        public async Task<ActionResult> GetMeetingsByUserId(string userId)
         {
             if (!ModelState.IsValid)
             {
@@ -28,7 +30,8 @@ namespace Server.API.Controllers
         }
         
         [HttpPost]
-        public async Task<IActionResult> CreateMeeting([FromQuery] int userId, [FromBody] MeetingDto? meetingCreate)
+        [Authorize]
+        public async Task<IActionResult> CreateMeeting([FromQuery] string userId, [FromBody] MeetingDto? meetingCreate)
         {
             if (meetingCreate == null)
                 return BadRequest(ModelState);
@@ -45,7 +48,7 @@ namespace Server.API.Controllers
                 return BadRequest(ModelState);
             
             var meetingMap = _mapper.Map<Meeting>(meetingCreate);
-            meetingMap.UserId = userId.ToString();
+            meetingMap.UserId = userId;
 
             if (!await _service.Create(meetingMap))
             {

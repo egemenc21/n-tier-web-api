@@ -11,10 +11,12 @@ namespace Server.Context.Repositories;
 public class UserRepository : IUserRepository
 {
     private readonly UserManager<AppUser> _userManager;
+    private readonly ApplicationDbContext _context;
 
-    public UserRepository(UserManager<AppUser> userManager)
+    public UserRepository(UserManager<AppUser> userManager, ApplicationDbContext context)
     {
         _userManager = userManager;
+        _context = context;
     }
 
     public async Task<AppUser?> GetUserByIdAsync(string id)
@@ -71,33 +73,40 @@ public class UserRepository : IUserRepository
 
     public async Task<bool> UpdateAsync(AppUser user)
     {
-        await _userManager.UpdateAsync(user);
-        return await Save();
+        var updatedUser = await _userManager.UpdateAsync(user);
+        
+        return updatedUser.Succeeded;
     }
 
-    public async Task DeleteAsync(int id)
-    {
-        // var user = await _context.Users.FindAsync(id);
-        //
-        // if (user != null)
-        // {
-        //     // var meetingsToDelete = _context.Meetings.Where(m => m.UserId == id);
-        //     // _context.Meetings.RemoveRange(meetingsToDelete);
-        //     _context.Users.Remove(user);
-        //     await _context.SaveChangesAsync();
-        // }
-    }
+    public async Task DeleteAsync(string id)
 
-    public bool UserExists(int userId)
     {
-        // return _context.Users.Any(u => u.Id == userId);
-        return true;
+        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
+        
+        if (user != null)
+        {
+            var meetingsToDelete = await _context.Meetings.Where(m => m != null && m.UserId == id).ToListAsync();
+            _context.Meetings.RemoveRange(meetingsToDelete);
+            
+            await _userManager.DeleteAsync(user);
+            await _context.SaveChangesAsync();
+        }
+    }
+    
+    public async Task<bool> UserExists(string userId)
+    {
+        return await _userManager.Users.AnyAsync(u => u.Id == userId);
     }
     
     public async Task<bool> Save()
     {
-        // var saved = await _context.SaveChangesAsync();
+        var saved = await _context.SaveChangesAsync();
 
-        return true;
+        return saved > 0;
+    }
+    
+    public void Detach(AppUser user)
+    { 
+        _context.Entry(user).State = EntityState.Detached;
     }
 }

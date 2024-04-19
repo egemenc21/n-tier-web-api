@@ -10,8 +10,8 @@ public class MeetingProfile : Profile
     {
         CreateMap<Meeting, MeetingDto>();
         CreateMap<MeetingDto, Meeting>();
-        // CreateMap<User, UserDto>();
-        // CreateMap<UserDto, User>();
-
+        CreateMap<AppUser, UserDto>();
+        CreateMap<UserDto, AppUser>();
+        
     }
 }

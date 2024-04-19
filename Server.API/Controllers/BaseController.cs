@@ -2,8 +2,6 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Server.Business.Services;
-using Server.Model.Dtos;
-using Server.Model.Models;
 
 namespace Server.API.Controllers;
 
@@ -40,14 +38,15 @@ public class BaseController<TService, TEntity, TDto> : ControllerBase
     //Read by id
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    [Authorize]
+    public async Task<IActionResult> GetById(string id)
     {
-        if (!_service.Exists(id))
+        if (!await _service.Exists(id))
         {
             return NotFound();
         }
 
-        var data = _mapper.Map<TDto>(await _service.GetById(id));
+        var data = _mapper.Map<TDto>(await _service.GetById(id.ToString()));
 
         if (!ModelState.IsValid)
         {
@@ -60,9 +59,10 @@ public class BaseController<TService, TEntity, TDto> : ControllerBase
     //Update
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] TDto entityToBeUpdated)
+    [Authorize]
+    public virtual async Task<IActionResult> Update(string id, [FromBody] TDto entityToBeUpdated)
     {
-        if (!_service.Exists(id))
+        if (!await _service.Exists(id))
         {
             return NotFound();
         }
@@ -73,6 +73,8 @@ public class BaseController<TService, TEntity, TDto> : ControllerBase
         }
 
         var entityMap = _mapper.Map<TEntity>(entityToBeUpdated);
+
+        Console.WriteLine(entityMap + "_________________________________________");
 
         try
         {
@@ -95,9 +97,10 @@ public class BaseController<TService, TEntity, TDto> : ControllerBase
     //Delete
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    [Authorize]
+    public async Task<IActionResult> Delete(string id)
     {
-        if (!_service.Exists(id))
+        if (!await _service.Exists(id))
             return NotFound();
 
         if (!ModelState.IsValid)

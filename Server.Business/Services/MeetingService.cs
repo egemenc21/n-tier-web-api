@@ -18,14 +18,14 @@ public class MeetingService : IBaseService<Meeting>
         return await _meetingRepository.GetMeetings();
     }
 
-    public async Task<List<Meeting?>> GetMeetingsByUserId(int userId)
+    public async Task<List<Meeting?>> GetMeetingsByUserId(string userId)
     {
         return await _meetingRepository.GetMeetingsByUserId(userId);
     }
 
-    public async Task<Meeting> GetById(int id)
+    public async Task<Meeting?> GetById(string id)
     {
-        return await _meetingRepository.GetByIdAsync(id);
+        return await _meetingRepository.GetByIdAsync(int.Parse(id));
     }
     
     public async Task<Meeting?> GetMeetingByName(string name)
@@ -38,16 +38,16 @@ public class MeetingService : IBaseService<Meeting>
         return await _meetingRepository.CreateMeetingAsync(meeting);
     }
 
-    public async Task<bool> Update(int id, Meeting meeting)
+    public async Task<bool> Update(string id, Meeting meeting)
     {
-        var existingMeeting = await _meetingRepository.GetByIdAsync(id);
+        var existingMeeting = await _meetingRepository.GetByIdAsync(int.Parse(id));
         
         if (existingMeeting == null)
         {
             throw new KeyNotFoundException("Meeting not found");
         }
         
-        if (id != meeting.Id)
+        if (int.Parse(id) != meeting.Id)
         {
             return false;
         }
@@ -57,13 +57,13 @@ public class MeetingService : IBaseService<Meeting>
         return await _meetingRepository.UpdateAsync(meeting);;
     }
 
-    public async Task Delete(int id)
+    public async Task Delete(string id)
     {
-        await _meetingRepository.DeleteAsync(id);
+        await _meetingRepository.DeleteAsync(int.Parse(id));
     }
 
-    public bool Exists(int id)
+    public async Task<bool>  Exists(string id)
     {
-        return _meetingRepository.MeetingExists(id);
+        return await _meetingRepository.MeetingExists(int.Parse(id));
     }
 }

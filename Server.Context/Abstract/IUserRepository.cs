@@ -11,7 +11,9 @@ public interface IUserRepository
     Task<List<AppUser>> GetUsersAsync();
     Task<CreateUserResponse> AddAsync(UserRegisterDto model);
     Task<bool> UpdateAsync(AppUser user);
-    Task DeleteAsync(int id);
+    Task DeleteAsync(string id);
 
-    bool UserExists(int userId);
+    Task<bool> UserExists(string userId);
+
+    void Detach(AppUser user);
 }

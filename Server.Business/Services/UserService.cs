@@ -1,21 +1,15 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using Server.Business.Token;
 using Server.Context.Abstract;
 using Server.Core.Email;
 using Server.Model.Dtos;
 using Server.Model.Dtos.User;
 using Server.Model.Models;
-using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
 namespace Server.Business.Services;
 
-public class UserService
+public class UserService : IBaseService<AppUser>
 {
     private readonly IUserRepository _userRepository;
     private readonly IConfiguration _configuration;
@@ -38,7 +32,7 @@ public class UserService
     {
         return await _userRepository.GetUsersAsync();
     }
-
+    
     public async Task<AppUser?> GetById(string id)
     {
         return await _userRepository.GetUserByIdAsync(id);
@@ -62,8 +56,10 @@ public class UserService
         {
             return false;
         }
+        
+        var data = await _userRepository.UpdateAsync(user);
 
-        return await _userRepository.UpdateAsync(user);
+        return data;
     }
 
     public async Task<AppUser?> GetUserByEmail(string email)
@@ -110,13 +106,13 @@ public class UserService
         ;
     }
 
-    public async Task Delete(int id)
+    public async Task Delete(string id)
     {
         await _userRepository.DeleteAsync(id);
     }
 
-    public bool Exists(int id)
+    public async Task<bool> Exists(string id)
     {
-        return _userRepository.UserExists(id);
+        return await _userRepository.UserExists(id);
     }
 }
