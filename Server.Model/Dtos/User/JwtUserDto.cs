@@ -1,6 +1,6 @@
-namespace Server.Model.Dtos;
+namespace Server.Model.Dtos.User;
 
-public class NewUserDto
+public class JwtUserDto
 {
     public string Id { get; set; }
 

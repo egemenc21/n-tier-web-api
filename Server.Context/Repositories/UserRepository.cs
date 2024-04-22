@@ -24,11 +24,11 @@ public class UserRepository : IUserRepository
         return await _userManager.Users.Where(u => u.Id == id).FirstOrDefaultAsync();
     }
 
-    public async Task<AppUser> GetUserByEmailAsync(string email)
+    public async Task<AppUser?> GetUserByEmailAsync(string email)
     {
         if (email == null) throw new ArgumentNullException(nameof(email));
 
-        return await _userManager.Users.FirstOrDefaultAsync(u => u.Email == email) ?? throw new InvalidOperationException();
+        return await _userManager.Users.FirstOrDefaultAsync(u => u.Email == email);
     }
 
     public async Task<List<AppUser>> GetUsersAsync()
@@ -36,7 +36,7 @@ public class UserRepository : IUserRepository
         return await _userManager.Users.ToListAsync();
     }
 
-    public async Task<CreateUserResponse> AddAsync(UserRegisterDto model)
+    public async Task<CreateUserResponse> AddAsync(UserDbEntryDto model)
     {
         var appUser = new AppUser()
         {

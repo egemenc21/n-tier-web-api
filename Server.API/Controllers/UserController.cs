@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Server.Business.Services;
 using Server.Model.Dtos;
+using Server.Model.Dtos.User;
 using Server.Model.Models;
 
 namespace Server.API.Controllers;
@@ -11,11 +12,10 @@ namespace Server.API.Controllers;
 [ApiController]
 public class UserController : BaseController<UserService, AppUser, UserDto >
 {
-    private readonly UserService _userService;
 
     public UserController(UserService userService, IMapper mapper) : base(userService, mapper)
     {
-        _userService = userService;
+
     }
 
     [HttpPost("register")]
@@ -25,8 +25,22 @@ public class UserController : BaseController<UserService, AppUser, UserDto >
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+            
+            if (registerDto.File.Length == 0)
+                return BadRequest("File is required.");
+            var fileUrl = await _service.WriteFile(registerDto.File);
 
-            var response = await _userService.Register(registerDto);
+            var newUserRegisteration = new UserDbEntryDto()
+            {
+                Name = registerDto.Name,
+                Surname = registerDto.Surname,
+                Email = registerDto.Email,
+                Password = registerDto.Password,
+                PhoneNumber = registerDto.PhoneNumber,
+                ProfilePictureUrl = fileUrl,
+            };
+           
+            var response = await _service.Register(newUserRegisteration);
 
             if (response.Succeeded == false)
             {
@@ -47,12 +61,23 @@ public class UserController : BaseController<UserService, AppUser, UserDto >
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var user = await _userService.Login(request.Email, request.Password);
+        var user = await _service.Login(request.Email, request.Password);
 
         if (user == null)
             return Unauthorized("Invalid email or password");
 
         return Ok(user);
     }
+
+    [HttpPost("FileUpload")]
+    public async Task<IActionResult> Upload(IFormFile file)
+    {
+        var fileUrl = await _service.WriteFile(file);
+        return Ok(fileUrl);
+    }
+
+
+    
+    
     
 }

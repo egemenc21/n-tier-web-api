@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Server.Model.Dtos.User;
 
-public class UserRegisterDto
+public class UserDbEntryDto
 {
     [Required] public string Name { get; set; } = string.Empty;
     [Required] public string Surname { get; set; } = string.Empty;
@@ -13,6 +13,6 @@ public class UserRegisterDto
     [Required]
     public string PhoneNumber { get; set; } = string.Empty;
     [Required]
-    // public string ProfilePictureUrl { get; set; } = string.Empty;
-    public IFormFile File { get; set; }
+    public string ProfilePictureUrl { get; set; } = string.Empty;
+
 }

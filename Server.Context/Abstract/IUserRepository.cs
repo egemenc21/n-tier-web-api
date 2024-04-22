@@ -7,9 +7,9 @@ namespace Server.Context.Abstract;
 public interface IUserRepository
 {
     Task<AppUser?> GetUserByIdAsync(string id);
-    Task<AppUser> GetUserByEmailAsync(string email);
+    Task<AppUser?> GetUserByEmailAsync(string email);
     Task<List<AppUser>> GetUsersAsync();
-    Task<CreateUserResponse> AddAsync(UserRegisterDto model);
+    Task<CreateUserResponse> AddAsync(UserDbEntryDto model);
     Task<bool> UpdateAsync(AppUser user);
     Task DeleteAsync(string id);
 
