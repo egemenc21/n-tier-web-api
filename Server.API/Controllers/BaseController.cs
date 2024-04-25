@@ -5,10 +5,11 @@ using Server.Business.Services;
 
 namespace Server.API.Controllers;
 
-public class BaseController<TService, TEntity, TDto> : ControllerBase
-    where TService : IBaseService<TEntity, TDto>
+public class BaseController<TService, TEntity, TDto, TDbDto> : ControllerBase
+    where TService : IBaseService<TEntity, TDto, TDbDto>
     where TEntity : class
     where TDto : class
+    where TDbDto : class
 {
     protected readonly TService _service;
     protected readonly IMapper _mapper;
@@ -30,7 +31,7 @@ public class BaseController<TService, TEntity, TDto> : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var data = _mapper.Map<List<TDto>>(await _service.GetAll());
+        var data = _mapper.Map<List<TDbDto>>(await _service.GetAll());
 
         return Ok(data);
     }
@@ -46,7 +47,7 @@ public class BaseController<TService, TEntity, TDto> : ControllerBase
             return NotFound();
         }
 
-        var data = _mapper.Map<TDto>(await _service.GetById(id.ToString()));
+        var data = _mapper.Map<TDbDto>(await _service.GetById(id));
 
         if (!ModelState.IsValid)
         {
@@ -60,7 +61,7 @@ public class BaseController<TService, TEntity, TDto> : ControllerBase
 
     [HttpPut("{id}")]
     [Authorize]
-    public virtual async Task<IActionResult> Update(string id, [FromBody] TDto entityToBeUpdated)
+    public async Task<IActionResult> Update(string id, [FromForm] TDto entityToBeUpdated)
     {
         if (!await _service.Exists(id))
         {

@@ -10,7 +10,7 @@ namespace Server.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MeetingController : BaseController<MeetingService, Meeting, MeetingDbEntryDto>
+    public class MeetingController : BaseController<MeetingService, Meeting, MeetingDto, MeetingDbEntryDto>
     {
         public MeetingController(MeetingService service, IMapper mapper) : base(service, mapper)
         {

@@ -9,5 +9,5 @@ public class MeetingDto
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }
     public string Description { get; set; }
-    public IFormFile Document { get; set; }
+    public IFormFile? Document { get; set; }
 }

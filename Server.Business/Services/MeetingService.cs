@@ -6,7 +6,7 @@ using Server.Model.Models;
 
 namespace Server.Business.Services;
 
-public class MeetingService : IBaseService<Meeting, MeetingDbEntryDto>
+public class MeetingService : IBaseService<Meeting, MeetingDto, MeetingDbEntryDto>
 {
     private readonly IMeetingRepository _meetingRepository;
 
@@ -41,7 +41,7 @@ public class MeetingService : IBaseService<Meeting, MeetingDbEntryDto>
         return await _meetingRepository.CreateMeetingAsync(meeting);
     }
 
-    public async Task<bool> Update(string id, MeetingDbEntryDto meetingDbEntryDto)
+    public async Task<bool> Update(string id, MeetingDto meetingToBeUpdated)
     {
         var existingMeeting = await _meetingRepository.GetByIdAsync(int.Parse(id));
 
@@ -49,21 +49,33 @@ public class MeetingService : IBaseService<Meeting, MeetingDbEntryDto>
         {
             throw new KeyNotFoundException("Meeting not found");
         }
+        
+        if (meetingToBeUpdated.Document == null)
+        {
+            existingMeeting.Id = meetingToBeUpdated.Id;
+            existingMeeting.Name = meetingToBeUpdated.Name;
+            existingMeeting.StartDate = meetingToBeUpdated.StartDate;
+            existingMeeting.EndDate = meetingToBeUpdated.EndDate;
+            existingMeeting.Description = meetingToBeUpdated.Description;
+        }
+        else
+        {
+            var newDocumentUrl = await WriteFile(meetingToBeUpdated.Document);
+            existingMeeting.Id = meetingToBeUpdated.Id;
+            existingMeeting.Name = meetingToBeUpdated.Name;
+            existingMeeting.StartDate = meetingToBeUpdated.StartDate;
+            existingMeeting.EndDate = meetingToBeUpdated.EndDate;
+            existingMeeting.Description = meetingToBeUpdated.Description;
+            existingMeeting.DocumentUrl = newDocumentUrl;
+        }
 
-        if (int.Parse(id) != meetingDbEntryDto.Id)
+        if (int.Parse(id) != meetingToBeUpdated.Id)
         {
             return false;
         }
-
-        existingMeeting.Id = meetingDbEntryDto.Id;
-        existingMeeting.Name = meetingDbEntryDto.Name;
-        existingMeeting.StartDate = meetingDbEntryDto.StartDate;
-        existingMeeting.EndDate = meetingDbEntryDto.EndDate;
-        existingMeeting.Description = meetingDbEntryDto.Description;
-        existingMeeting.DocumentUrl = meetingDbEntryDto.DocumentUrl;
-
+        
         return await _meetingRepository.UpdateAsync(existingMeeting);
-        ;
+        
     }
 
     public async Task Delete(string id)

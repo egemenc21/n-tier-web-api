@@ -1,6 +1,6 @@
 namespace Server.Business.Services;
 
-public interface IBaseService<TEntity, TDto>
+public interface IBaseService<TEntity, TDto, TDbDto>
 {
     Task<List<TEntity>> GetAll();
     Task<TEntity?> GetById(string id);

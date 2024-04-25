@@ -1,6 +1,7 @@
 using AutoMapper;
 using Server.Model.Dtos;
 using Server.Model.Dtos.Meeting;
+using Server.Model.Dtos.User;
 using Server.Model.Models;
 
 namespace Server.Context.Helper;
@@ -11,8 +12,8 @@ public class MeetingProfile : Profile
     {
         CreateMap<Meeting, MeetingDbEntryDto>();
         CreateMap<MeetingDbEntryDto, Meeting>();
-        CreateMap<AppUser, UserDto>();
-        CreateMap<UserDto, AppUser>();
+        CreateMap<AppUser, UserDbEntryDto>();
+        CreateMap<UserDbEntryDto, AppUser>();
         
     }
 }

@@ -10,7 +10,7 @@ using Server.Model.Models;
 
 namespace Server.Business.Services;
 
-public class UserService : IBaseService<AppUser, UserDto>
+public class UserService : IBaseService<AppUser, UserDto, UserDbEntryDto>
 {
     private readonly IUserRepository _userRepository;
     private readonly IConfiguration _configuration;

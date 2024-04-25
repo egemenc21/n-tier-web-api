@@ -10,7 +10,7 @@ namespace Server.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class UserController : BaseController<UserService, AppUser, UserDto >
+public class UserController : BaseController<UserService, AppUser, UserDto, UserDbEntryDto >
 {
 
     public UserController(UserService userService, IMapper mapper) : base(userService, mapper)
