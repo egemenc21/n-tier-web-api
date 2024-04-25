@@ -19,7 +19,7 @@ public class UserController : BaseController<UserService, AppUser, UserDto >
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] UserRegisterDto registerDto)
+    public async Task<IActionResult> Register([FromForm] UserRegisterDto registerDto)
     {
         try
         {
@@ -28,9 +28,11 @@ public class UserController : BaseController<UserService, AppUser, UserDto >
             
             if (registerDto.File.Length == 0)
                 return BadRequest("File is required.");
+            
+            
             var fileUrl = await _service.WriteFile(registerDto.File);
 
-            var newUserRegisteration = new UserDbEntryDto()
+            UserDbEntryDto newUserRegistration = new()
             {
                 Name = registerDto.Name,
                 Surname = registerDto.Surname,
@@ -40,7 +42,7 @@ public class UserController : BaseController<UserService, AppUser, UserDto >
                 ProfilePictureUrl = fileUrl,
             };
            
-            var response = await _service.Register(newUserRegisteration);
+            var response = await _service.Register(newUserRegistration);
 
             if (response.Succeeded == false)
             {

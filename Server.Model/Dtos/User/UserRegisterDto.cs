@@ -15,4 +15,5 @@ public class UserRegisterDto
     [Required]
     // public string ProfilePictureUrl { get; set; } = string.Empty;
     public IFormFile File { get; set; }
+    
 }

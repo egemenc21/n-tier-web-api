@@ -29,4 +29,8 @@
       <ProjectReference Include="..\Server.Core\Server.Core.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Uploads\Documents\" />
+    </ItemGroup>
+
 </Project>

@@ -1,6 +1,6 @@
-namespace Server.Model.Dtos
+namespace Server.Model.Dtos.Meeting
 {
-    public class MeetingDto
+    public class MeetingDbEntryDto
     {
         public int Id { set; get; }
         public string Name { get; set; }
