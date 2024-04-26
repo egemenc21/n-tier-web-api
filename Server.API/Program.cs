@@ -102,8 +102,8 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 
 
 
-// builder.Services.AddCors(options => options.AddPolicy("ApiCorsPolicy",
-//     build => { build.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader(); }));
+builder.Services.AddCors(options => options.AddPolicy("ApiCorsPolicy",
+    build => { build.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader(); }));
 
 
 var app = builder.Build();
@@ -116,15 +116,17 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
-app.UseCors(x => x
-    .AllowAnyMethod()
-    .AllowAnyHeader()
-    .AllowCredentials()
-    .WithOrigins("http://localhost:4200")
-    // .WithOrigins("https://localhost:4200))
-    .SetIsOriginAllowed(origin => true));
+// app.UseCors(x => x
+//     .AllowAnyMethod()
+//     .AllowAnyHeader()
+//     .AllowCredentials()
+//     .WithOrigins("http://localhost:4200")
+//     // .WithOrigins("https://localhost:4200))
+//     .SetIsOriginAllowed(origin => true));
+
+app.UseCors("ApiCorsPolicy");
 
 
 app.UseStaticFiles(new StaticFileOptions

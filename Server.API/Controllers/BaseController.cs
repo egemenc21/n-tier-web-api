@@ -5,6 +5,7 @@ using Server.Business.Services;
 
 namespace Server.API.Controllers;
 
+[Authorize]
 public class BaseController<TService, TEntity, TDto, TDbDto> : ControllerBase
     where TService : IBaseService<TEntity, TDto, TDbDto>
     where TEntity : class
@@ -23,7 +24,6 @@ public class BaseController<TService, TEntity, TDto, TDbDto> : ControllerBase
     //Read all
 
     [HttpGet]
-    [Authorize]
     public async Task<IActionResult> GetAll()
     {
         if (!ModelState.IsValid)
@@ -39,7 +39,6 @@ public class BaseController<TService, TEntity, TDto, TDbDto> : ControllerBase
     //Read by id
 
     [HttpGet("{id}")]
-    [Authorize]
     public async Task<IActionResult> GetById(string id)
     {
         if (!await _service.Exists(id))
@@ -60,7 +59,6 @@ public class BaseController<TService, TEntity, TDto, TDbDto> : ControllerBase
     //Update
 
     [HttpPut("{id}")]
-    [Authorize]
     public async Task<IActionResult> Update(string id, [FromForm] TDto entityToBeUpdated)
     {
         if (!await _service.Exists(id))
@@ -94,7 +92,6 @@ public class BaseController<TService, TEntity, TDto, TDbDto> : ControllerBase
     //Delete
 
     [HttpDelete("{id}")]
-    [Authorize]
     public async Task<IActionResult> Delete(string id)
     {
         if (!await _service.Exists(id))

@@ -15,9 +15,8 @@ namespace Server.API.Controllers
         public MeetingController(MeetingService service, IMapper mapper) : base(service, mapper)
         {
         }
-        
+
         [HttpGet("User/{userId}")]
-        [Authorize]
         public async Task<ActionResult> GetMeetingsByUserId(string userId)
         {
             if (!ModelState.IsValid)
@@ -29,9 +28,8 @@ namespace Server.API.Controllers
 
             return Ok(meetings);
         }
-        
+
         [HttpPost]
-        [Authorize]
         public async Task<IActionResult> CreateMeeting([FromQuery] string userId, [FromForm] MeetingDto? meetingCreate)
         {
             if (meetingCreate == null)
@@ -68,7 +66,7 @@ namespace Server.API.Controllers
                 ModelState.AddModelError("", "Something went wrong while saving");
                 return StatusCode(500, ModelState);
             }
-            
+
             return Ok(new { message = "Successfully created" });
         }
     }

@@ -19,6 +19,7 @@ public class UserController : BaseController<UserService, AppUser, UserDto, User
     }
 
     [HttpPost("register")]
+    [AllowAnonymous]
     public async Task<IActionResult> Register([FromForm] UserRegisterDto registerDto)
     {
         try
@@ -58,6 +59,7 @@ public class UserController : BaseController<UserService, AppUser, UserDto, User
     }
 
     [HttpPost("login")]
+    [AllowAnonymous]
     public async Task<ActionResult> Login(UserLoginDto request)
     {
         if (!ModelState.IsValid)
