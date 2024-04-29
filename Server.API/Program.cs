@@ -13,8 +13,6 @@ using Server.Core.Email;
 using Server.Model.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-
 
 // Add services to the container.
 
@@ -102,19 +100,20 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 
 
 
-builder.Services.AddCors(options => options.AddPolicy("ApiCorsPolicy",
-    build => { build.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader(); }));
+// builder.Services.AddCors(options => options.AddPolicy("ApiCorsPolicy",
+//     build => { build.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader(); }));
+
 
 
 var app = builder.Build();
 
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+// if (app.Environment.IsDevelopment())
+// {
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+// }
 
 app.UseHttpsRedirection();
 
@@ -126,8 +125,12 @@ app.UseHttpsRedirection();
 //     // .WithOrigins("https://localhost:4200))
 //     .SetIsOriginAllowed(origin => true));
 
-app.UseCors("ApiCorsPolicy");
+// app.UseCors("ApiCorsPolicy");
 
+app.UseCors(builder => builder
+    .AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader());
 
 app.UseStaticFiles(new StaticFileOptions
 {
