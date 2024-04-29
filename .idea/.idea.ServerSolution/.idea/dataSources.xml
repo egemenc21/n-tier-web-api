@@ -9,5 +9,13 @@
       <jdbc-url>jdbc:postgresql://localhost:5432/meeting_db?password=415987qqss&amp;user=egemenc</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="postgres@alpata-db.postgres.database.azure.com" uuid="45cc711c-8832-4a5e-94a4-78acd446f6b1">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <configured-by-url>true</configured-by-url>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://alpata-db.postgres.database.azure.com:5432/postgres?user=egemenc&amp;password=j84JWcaGbDQEu,T&amp;sslmode=require</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>
