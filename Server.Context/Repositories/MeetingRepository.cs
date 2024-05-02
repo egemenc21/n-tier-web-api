@@ -38,10 +38,15 @@ public class MeetingRepository : IMeetingRepository
         return await _context.Meetings.Where(m => m.Id == id).FirstOrDefaultAsync();
     }
 
-    public async Task<bool> CreateMeetingAsync(Meeting meeting)
+    public async Task<Meeting?> CreateMeetingAsync(Meeting meeting)
     {
         _context.Meetings.Add(meeting);
-        return await Save();
+        await Save();
+
+        // Retrieve the newly created meeting by its name
+        var createdMeeting = await GetMeetingByNameAsync(meeting.Name);
+
+        return createdMeeting;
     }
 
     public async Task<bool> UpdateAsync(Meeting meeting)

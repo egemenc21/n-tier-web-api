@@ -10,7 +10,7 @@ public interface IMeetingRepository
     Task<List<Meeting?>> GetMeetingsByUserId(string userId);
     
     Task<Meeting?> GetMeetingByNameAsync(string name);
-    Task<bool> CreateMeetingAsync(Meeting meeting);
+    Task<Meeting?> CreateMeetingAsync(Meeting meeting);
     Task<bool> UpdateAsync(Meeting meeting);
     Task DeleteAsync(int id);
 

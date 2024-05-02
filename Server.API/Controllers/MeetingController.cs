@@ -45,8 +45,14 @@ namespace Server.API.Controllers
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+            
+            var documentUrl = string.Empty;
+            
+            if (meetingCreate.Document != null)
+            {
+                documentUrl = await _service.WriteFile(meetingCreate.Document);
+            }
 
-            var documentUrl = await _service.WriteFile(meetingCreate.Document);
 
             Meeting newMeeting = new()
             {
@@ -57,9 +63,6 @@ namespace Server.API.Controllers
                 DocumentUrl = documentUrl,
                 UserId = userId
             };
-            //
-            // var meetingMap = _mapper.Map<Meeting>(meetingCreate);
-            // meetingMap.UserId = userId;
 
             if (!await _service.Create(newMeeting))
             {

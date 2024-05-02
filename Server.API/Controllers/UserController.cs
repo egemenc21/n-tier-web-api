@@ -72,15 +72,6 @@ public class UserController : BaseController<UserService, AppUser, UserDto, User
 
         return Ok(user);
     }
-
-    [HttpPost("FileUpload")]
-    public async Task<IActionResult> Upload(IFormFile file)
-    {
-        var fileUrl = await _service.WriteFile(file);
-        return Ok(fileUrl);
-    }
-
-
     
     
     

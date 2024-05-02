@@ -21,6 +21,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+//swagger auth
+
 builder.Services.AddSwaggerGen(option =>
 {
     option.SwaggerDoc("v1", new OpenApiInfo() { Title = "Demo API", Version = "v1" });
@@ -79,14 +82,15 @@ builder.Services.AddAuthentication(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer = true,
+        ValidateIssuer = true, //check who produces the token 
         ValidIssuer = builder.Configuration["JWT:Issuer"],
-        ValidateAudience = true,
+        ValidateAudience = true, //check who needs to use the token
         ValidAudience = builder.Configuration["JWT:Audience"],
-        ValidateIssuerSigningKey = true,
+        ValidateLifetime = true, //check is token lifetime validation
         IssuerSigningKey = new SymmetricSecurityKey(
             System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:SigningKey"])
-        )
+        ),
+        ValidateIssuerSigningKey = true, //check secret signing key
     };
 });
 
@@ -115,7 +119,7 @@ var app = builder.Build();
     app.UseSwaggerUI();
 // }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 
 // app.UseCors(x => x
 //     .AllowAnyMethod()

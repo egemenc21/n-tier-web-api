@@ -1,4 +1,4 @@
-namespace Server.Model.Dtos;
+namespace Server.Model.Dtos.User;
 
 public class UserLoginDto
 {

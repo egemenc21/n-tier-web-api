@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Server.Context.Abstract;
+using Server.Core.Email;
 using Server.Model.Dtos;
 using Server.Model.Dtos.Meeting;
 using Server.Model.Models;
@@ -9,10 +11,17 @@ namespace Server.Business.Services;
 public class MeetingService : IBaseService<Meeting, MeetingDto, MeetingDbEntryDto>
 {
     private readonly IMeetingRepository _meetingRepository;
+    private readonly IConfiguration _configuration;
+    private readonly IEmailSender _emailSender;
+    private readonly IUserRepository _userRepository;
 
-    public MeetingService(IMeetingRepository meetingRepository)
+    public MeetingService(IMeetingRepository meetingRepository, IConfiguration configuration, IEmailSender emailSender,
+        IUserRepository userRepository)
     {
         _meetingRepository = meetingRepository;
+        _userRepository = userRepository;
+        _configuration = configuration;
+        _emailSender = emailSender;
     }
 
     public async Task<List<Meeting>> GetAll()
@@ -38,7 +47,34 @@ public class MeetingService : IBaseService<Meeting, MeetingDto, MeetingDbEntryDt
 
     public async Task<bool> Create(Meeting meeting)
     {
-        return await _meetingRepository.CreateMeetingAsync(meeting);
+        if (meeting.UserId == null) return false;
+
+        var user = await _userRepository.GetUserByIdAsync(meeting.UserId);
+
+        if (user == null) return false;
+
+        var senderEmail = _configuration["SENDER_EMAIL"]!;
+        var senderPassword = _configuration["SENDER_PASSWORD"]!;
+
+        var createdMeeting = await _meetingRepository.CreateMeetingAsync(meeting);
+
+        if (user.Email != null && createdMeeting != null)
+        {
+            var messageToSend =
+                $" Your {meeting.Name} meeting is about {meeting.Description} and will start at {meeting.StartDate}, ends at {meeting.EndDate}";
+
+
+            await _emailSender.SendEmailAsync(
+                senderEmail,
+                senderPassword,
+                user.Email,
+                "Your new meeting!",
+                messageToSend
+            );
+            return true;
+        }
+
+        return false;
     }
 
     public async Task<bool> Update(string id, MeetingDto meetingToBeUpdated)
@@ -49,7 +85,7 @@ public class MeetingService : IBaseService<Meeting, MeetingDto, MeetingDbEntryDt
         {
             throw new KeyNotFoundException("Meeting not found");
         }
-        
+
         if (meetingToBeUpdated.Document == null)
         {
             existingMeeting.Id = meetingToBeUpdated.Id;
@@ -73,9 +109,8 @@ public class MeetingService : IBaseService<Meeting, MeetingDto, MeetingDbEntryDt
         {
             return false;
         }
-        
+
         return await _meetingRepository.UpdateAsync(existingMeeting);
-        
     }
 
     public async Task Delete(string id)
@@ -117,6 +152,7 @@ public class MeetingService : IBaseService<Meeting, MeetingDto, MeetingDbEntryDt
         {
             File.Delete(filePath);
         }
+
         return Task.CompletedTask;
     }
 }
